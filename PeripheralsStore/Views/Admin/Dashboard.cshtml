@@ -1,0 +1,14 @@
+<h1>Админ-панель</h1>
+<div class="row g-3">
+    <div class="col-md-3"><div class="card p-3">Пользователи: <strong>@ViewBag.UsersCount</strong></div></div>
+    <div class="col-md-3"><div class="card p-3">Товары: <strong>@ViewBag.ProductsCount</strong></div></div>
+    <div class="col-md-3"><div class="card p-3">Отзывы: <strong>@ViewBag.ReviewsCount</strong></div></div>
+    <div class="col-md-3"><div class="card p-3">Ожидают модерации: <strong>@ViewBag.PendingReviewsCount</strong></div></div>
+</div>
+<div class="mt-3 d-flex gap-2 flex-wrap">
+    <a asp-controller="Products" asp-action="Create" class="btn btn-primary">Добавить товар</a>
+    <a asp-controller="Categories" asp-action="Index" class="btn btn-outline-primary">Категории</a>
+    <a asp-controller="Brands" asp-action="Index" class="btn btn-outline-primary">Бренды</a>
+    <a asp-action="Users" class="btn btn-outline-dark">Пользователи</a>
+    <a asp-action="Reviews" class="btn btn-outline-dark">Отзывы</a>
+</div>

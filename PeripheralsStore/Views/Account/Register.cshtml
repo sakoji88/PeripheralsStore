@@ -1,0 +1,31 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Регистрация";
+}
+<h1>Регистрация</h1>
+<form asp-action="Register" method="post" class="card p-4 shadow-sm">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="FullName" class="form-label">ФИО</label>
+        <input asp-for="FullName" maxlength="100" class="form-control" placeholder="Иванов Иван" />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label">Email</label>
+        <input asp-for="Email" type="email" maxlength="150" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label">Пароль</label>
+        <input asp-for="Password" type="password" maxlength="100" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="ConfirmPassword" class="form-label">Повтор пароля</label>
+        <input asp-for="ConfirmPassword" type="password" maxlength="100" class="form-control" />
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+    <button class="btn btn-success" type="submit">Зарегистрироваться</button>
+</form>
+<partial name="_ValidationScriptsPartial" />

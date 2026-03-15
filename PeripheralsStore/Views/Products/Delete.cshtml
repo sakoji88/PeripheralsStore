@@ -1,0 +1,8 @@
+@model Product
+<h1>Удаление товара</h1>
+<p>Вы уверены, что хотите удалить <strong>@Model.Name</strong>?</p>
+<form method="post">
+    @Html.AntiForgeryToken()
+    <button class="btn btn-danger" type="submit">Удалить</button>
+    <a class="btn btn-secondary" asp-action="Index">Отмена</a>
+</form>
