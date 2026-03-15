@@ -24,4 +24,5 @@ public class User
     public Role? Role { get; set; }
 
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
+    public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 }

@@ -15,10 +15,27 @@ public class AppDbContext : DbContext
     public DbSet<Brand> Brands => Set<Brand>();
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Review> Reviews => Set<Review>();
+    public DbSet<CartItem> CartItems => Set<CartItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
+
+        modelBuilder.Entity<CartItem>()
+            .HasIndex(ci => new { ci.UserId, ci.ProductId })
+            .IsUnique();
+
+        modelBuilder.Entity<CartItem>()
+            .HasOne(ci => ci.User)
+            .WithMany(u => u.CartItems)
+            .HasForeignKey(ci => ci.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<CartItem>()
+            .HasOne(ci => ci.Product)
+            .WithMany(p => p.CartItems)
+            .HasForeignKey(ci => ci.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Role>().HasData(
             new Role { Id = 1, Name = "User" },
@@ -71,6 +88,10 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Review>().HasData(
             new Review { Id = 1, ProductId = 1, UserId = 1, Rating = 5, Comment = "Отличная клавиатура!", CreatedAt = new DateTime(2024, 2, 10), IsApproved = true },
             new Review { Id = 2, ProductId = 2, UserId = 1, Rating = 4, Comment = "Очень удобная мышь", CreatedAt = new DateTime(2024, 2, 15), IsApproved = true });
+
+        modelBuilder.Entity<CartItem>().HasData(
+            new CartItem { Id = 1, UserId = 1, ProductId = 1, Quantity = 1 },
+            new CartItem { Id = 2, UserId = 1, ProductId = 2, Quantity = 2 });
 
         base.OnModelCreating(modelBuilder);
     }

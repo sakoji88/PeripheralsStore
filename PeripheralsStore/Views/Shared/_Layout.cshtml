@@ -20,6 +20,10 @@
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Главная</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Products" asp-action="Index">Каталог</a></li>
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <li class="nav-item"><a class="nav-link" asp-controller="Cart" asp-action="Index">Корзина</a></li>
+                    }
                     @if (User.IsInRole("Admin"))
                     {
                         <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="Dashboard">Админ-панель</a></li>

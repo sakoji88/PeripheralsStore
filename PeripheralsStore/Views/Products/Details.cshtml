@@ -11,6 +11,16 @@
         <p>@Model.Description</p>
         <p>Наличие: @(Model.StockQuantity > 0 ? "В наличии" : "Нет в наличии")</p>
         <p>Средняя оценка: @ViewBag.AverageRating / 5</p>
+
+        @if (User.Identity?.IsAuthenticated ?? false)
+        {
+            <form asp-controller="Cart" asp-action="Add" method="post" class="d-flex gap-2 mt-3">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="productId" value="@Model.Id" />
+                <input type="number" name="quantity" min="1" max="100" value="1" class="form-control" style="max-width:120px" />
+                <button type="submit" class="btn btn-success">В корзину</button>
+            </form>
+        }
     </div>
 </div>
 <hr />

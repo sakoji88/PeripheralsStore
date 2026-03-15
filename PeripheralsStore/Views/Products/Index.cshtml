@@ -36,6 +36,15 @@ else
                     <p class="small text-muted">Остаток: @item.StockQuantity</p>
                     <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">Карточка</a>
                     @if (User.IsInRole("Admin")) { <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Редактировать</a> }
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <form asp-controller="Cart" asp-action="Add" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@item.Id" />
+                            <input type="hidden" name="quantity" value="1" />
+                            <button class="btn btn-outline-success" type="submit">В корзину</button>
+                        </form>
+                    }
                 </div>
             </div>
         </div>
