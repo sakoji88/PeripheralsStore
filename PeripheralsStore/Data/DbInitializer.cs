@@ -17,6 +17,17 @@ public static class DbInitializer
         {
             // Основной путь: применяем миграции.
             await dbContext.Database.MigrateAsync();
+
+            // Если миграций нет, старая БД может остаться со старой схемой.
+            // Проверяем критичные колонки и при несовместимости пересоздаём БД.
+            if (!await HasRequiredProductColumnsAsync(dbContext))
+            {
+                logger.LogWarning(
+                    "Обнаружена устаревшая схема таблицы Products (не хватает обязательных колонок). Выполняется пересоздание БД.");
+                await RecreateDatabaseAsync(dbContext, logger);
+                return;
+            }
+
             logger.LogInformation("Миграции базы данных успешно применены.");
         }
         catch (SqlException ex) when (
@@ -25,12 +36,47 @@ public static class DbInitializer
         {
             logger.LogWarning(ex,
                 "Обнаружена несовместимая старая схема БД. Выполняется пересоздание учебной базы данных.");
-
-            // Учебный fallback: если схема устарела, пересоздаём БД,
-            // чтобы приложение гарантированно запускалось у преподавателя/студента.
-            await dbContext.Database.EnsureDeletedAsync();
-            await dbContext.Database.EnsureCreatedAsync();
-            logger.LogInformation("База данных пересоздана с актуальной схемой.");
+            await RecreateDatabaseAsync(dbContext, logger);
         }
+    }
+
+    private static async Task RecreateDatabaseAsync(AppDbContext dbContext, ILogger logger)
+    {
+        await dbContext.Database.EnsureDeletedAsync();
+        await dbContext.Database.EnsureCreatedAsync();
+        logger.LogInformation("База данных пересоздана с актуальной схемой.");
+    }
+
+    private static async Task<bool> HasRequiredProductColumnsAsync(AppDbContext dbContext)
+    {
+        var connectionString = dbContext.Database.GetConnectionString();
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            return false;
+        }
+
+        var requiredColumns = new[] { "Article", "ConnectionType", "ImageUrl", "StockQuantity" };
+
+        await using var connection = new SqlConnection(connectionString);
+        await connection.OpenAsync();
+
+        const string sql = """
+                           SELECT COUNT(*)
+                           FROM INFORMATION_SCHEMA.COLUMNS
+                           WHERE TABLE_NAME = 'Products' AND COLUMN_NAME = @ColumnName
+                           """;
+
+        foreach (var columnName in requiredColumns)
+        {
+            await using var command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@ColumnName", columnName);
+            var exists = (int)(await command.ExecuteScalarAsync() ?? 0) > 0;
+            if (!exists)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
