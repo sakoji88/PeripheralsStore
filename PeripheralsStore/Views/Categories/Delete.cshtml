@@ -1,0 +1,4 @@
+@model Category
+<h1>Удаление категории</h1>
+<p>Удалить категорию <strong>@Model.Name</strong>?</p>
+<form method="post">@Html.AntiForgeryToken()<button class="btn btn-danger" type="submit">Удалить</button></form>

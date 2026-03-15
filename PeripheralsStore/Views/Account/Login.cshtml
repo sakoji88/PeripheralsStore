@@ -1,0 +1,21 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Вход";
+}
+<h1>Вход</h1>
+<form asp-action="Login" method="post" class="card p-4 shadow-sm">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label">Email</label>
+        <input asp-for="Email" type="email" maxlength="150" class="form-control" placeholder="example@mail.ru" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label">Пароль</label>
+        <input asp-for="Password" type="password" maxlength="100" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <button class="btn btn-primary" type="submit">Войти</button>
+</form>
+<partial name="_ValidationScriptsPartial" />
