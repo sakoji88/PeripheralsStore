@@ -1,0 +1,51 @@
+@model Product
+@{
+    ViewData["Title"] = Model.Name;
+}
+<div class="row">
+    <div class="col-md-5"><img src="@(Model.ImageUrl ?? "https://via.placeholder.com/700x500")" class="img-fluid rounded" alt="@Model.Name" /></div>
+    <div class="col-md-7">
+        <h1>@Model.Name</h1>
+        <p class="text-muted">@Model.Brand?.Name | @Model.Category?.Name | Арт.: @Model.Article</p>
+        <p class="fs-4 fw-bold">@Model.Price.ToString("N0") ₽</p>
+        <p>@Model.Description</p>
+        <p>Наличие: @(Model.StockQuantity > 0 ? "В наличии" : "Нет в наличии")</p>
+        <p>Средняя оценка: @ViewBag.AverageRating / 5</p>
+    </div>
+</div>
+<hr />
+<h3>Отзывы</h3>
+@if (!Model.Reviews.Any())
+{
+    <p>Отзывов пока нет.</p>
+}
+else
+{
+    @foreach (var review in Model.Reviews.OrderByDescending(r => r.CreatedAt))
+    {
+        <div class="border rounded p-2 mb-2">
+            <strong>@review.User?.FullName</strong> — @review.Rating/5
+            <div class="small text-muted">@review.CreatedAt.ToLocalTime()</div>
+            <div>@review.Comment</div>
+        </div>
+    }
+}
+
+@if (User.Identity?.IsAuthenticated ?? false)
+{
+    <h4 class="mt-4">Оставить отзыв</h4>
+    <form asp-controller="Reviews" asp-action="Create" method="post" class="card p-3">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="ProductId" value="@Model.Id" />
+        <div class="mb-2">
+            <label class="form-label">Рейтинг (1-5)</label>
+            <input name="Rating" type="number" min="1" max="5" class="form-control" required />
+        </div>
+        <div class="mb-2">
+            <label class="form-label">Комментарий</label>
+            <textarea name="Comment" maxlength="500" class="form-control" rows="4" required></textarea>
+            <small class="text-muted">Максимум 500 символов</small>
+        </div>
+        <button class="btn btn-primary" type="submit">Отправить</button>
+    </form>
+}
