@@ -25,6 +25,8 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+await DbInitializer.InitializeAsync(app.Services, app.Logger);
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
