@@ -3,3 +3,5 @@ body { background-color: #f5f7fb; }
 .card { border: none; box-shadow: 0 .25rem .75rem rgba(0,0,0,.08); }
 .navbar .nav-link.active, .navbar .nav-link:hover { color: #ffd166 !important; }
 .table td, .table th { vertical-align: middle; }
+
+footer .container { padding-top: .15rem; padding-bottom: .15rem; font-size: .8rem; }

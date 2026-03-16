@@ -69,7 +69,7 @@ public class ProductsController : Controller
         var product = await _dbContext.Products
             .Include(p => p.Brand)
             .Include(p => p.Category)
-            .Include(p => p.Reviews.Where(r => r.IsApproved)).ThenInclude(r => r.User)
+            .Include(p => p.Reviews.Where(r => r.IsApproved)).ThenInclude(r => r.User).ThenInclude(u => u!.Role)
             .FirstOrDefaultAsync(p => p.Id == id && p.IsActive);
 
         if (product is null)

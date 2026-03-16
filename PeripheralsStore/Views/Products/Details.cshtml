@@ -1,6 +1,10 @@
 @model Product
 @{
     ViewData["Title"] = Model.Name;
+    var visibleReviews = Model.Reviews
+        .Where(r => r.User?.Role?.Name != "Admin")
+        .OrderByDescending(r => r.CreatedAt)
+        .ToList();
 }
 <div class="row">
     <div class="col-md-5"><img src="@(Model.ImageUrl ?? "https://via.placeholder.com/700x500")" class="img-fluid rounded" alt="@Model.Name" /></div>
@@ -25,13 +29,13 @@
 </div>
 <hr />
 <h3>Отзывы</h3>
-@if (!Model.Reviews.Any())
+@if (!visibleReviews.Any())
 {
     <p>Отзывов пока нет.</p>
 }
 else
 {
-    @foreach (var review in Model.Reviews.OrderByDescending(r => r.CreatedAt))
+    @foreach (var review in visibleReviews)
     {
         <div class="border rounded p-2 mb-2">
             <strong>@review.User?.FullName</strong> — @review.Rating/5

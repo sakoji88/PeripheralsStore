@@ -3,10 +3,10 @@
 <table class="table table-bordered"><thead><tr><th>Товар</th><th>Пользователь</th><th>Оценка</th><th>Комментарий</th><th>Статус</th><th></th></tr></thead><tbody>
 @foreach (var r in Model)
 {
-<tr><td>@r.Product?.Name</td><td>@r.User?.FullName</td><td>@r.Rating</td><td>@r.Comment</td><td>@(r.IsApproved?"Одобрен":"Скрыт")</td><td class="d-flex gap-1">
-<form asp-controller="Reviews" asp-action="Moderate" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@r.Id" /><input type="hidden" name="approved" value="true" /><button class="btn btn-sm btn-success">Одобрить</button></form>
-<form asp-controller="Reviews" asp-action="Moderate" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@r.Id" /><input type="hidden" name="approved" value="false" /><button class="btn btn-sm btn-secondary">Скрыть</button></form>
-<form asp-controller="Reviews" asp-action="Delete" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@r.Id" /><button class="btn btn-sm btn-danger">Удалить</button></form>
+<tr><td>@r.Product?.Name</td><td>@r.User?.FullName</td><td>@r.Rating</td><td>@r.Comment</td><td><span class="badge @(r.IsApproved?"text-bg-success":"text-bg-secondary")">@(r.IsApproved?"Одобрен":"Скрыт")</span></td><td class="d-flex gap-1">
+<form asp-controller="Reviews" asp-action="Moderate" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@r.Id" /><input type="hidden" name="approved" value="true" /><button class="btn btn-sm btn-success" type="submit">Одобрить</button></form>
+<form asp-controller="Reviews" asp-action="Moderate" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@r.Id" /><input type="hidden" name="approved" value="false" /><button class="btn btn-sm btn-secondary" type="submit">Скрыть</button></form>
+<form asp-controller="Reviews" asp-action="Delete" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@r.Id" /><button class="btn btn-sm btn-danger" type="submit">Удалить</button></form>
 </td></tr>
 }
 </tbody></table>

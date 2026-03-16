@@ -76,6 +76,45 @@ public class CartController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Checkout()
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var items = await _dbContext.CartItems
+            .Include(ci => ci.Product)
+            .Where(ci => ci.UserId == userId)
+            .ToListAsync();
+
+        if (!items.Any())
+        {
+            TempData["Error"] = "Корзина пуста";
+            return RedirectToAction(nameof(Index));
+        }
+
+        foreach (var item in items)
+        {
+            if (item.Product is null || item.Product.StockQuantity < item.Quantity)
+            {
+                TempData["Error"] = $"Недостаточно товара на складе: {item.Product?.Name ?? "Неизвестный товар"}";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        foreach (var item in items)
+        {
+            item.Product!.StockQuantity -= item.Quantity;
+        }
+
+        _dbContext.CartItems.RemoveRange(items);
+        await _dbContext.SaveChangesAsync();
+
+        TempData["Success"] = "Покупка оформлена (демо). Остатки товаров обновлены.";
+        return RedirectToAction(nameof(Index));
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Remove(int id)

@@ -49,4 +49,8 @@ else
     </table>
 
     <div class="alert alert-success">Итого: <strong>@(((decimal)ViewBag.Total).ToString("N0")) ₽</strong></div>
+    <form asp-action="Checkout" method="post" class="mt-2">
+        @Html.AntiForgeryToken()
+        <button class="btn btn-success">Приобрести (демо)</button>
+    </form>
 }

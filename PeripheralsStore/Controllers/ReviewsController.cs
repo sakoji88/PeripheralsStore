@@ -58,6 +58,7 @@ public class ReviewsController : Controller
         if (review is null) return NotFound();
         review.IsApproved = approved;
         await _dbContext.SaveChangesAsync();
+        TempData["Success"] = approved ? "Отзыв одобрен" : "Отзыв скрыт";
         return RedirectToAction("Reviews", "Admin");
     }
 
@@ -70,6 +71,7 @@ public class ReviewsController : Controller
         if (review is null) return NotFound();
         _dbContext.Reviews.Remove(review);
         await _dbContext.SaveChangesAsync();
+        TempData["Success"] = "Отзыв удалён";
         return RedirectToAction("Reviews", "Admin");
     }
 }
