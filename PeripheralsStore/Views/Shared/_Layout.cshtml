@@ -12,13 +12,12 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" asp-controller="Home" asp-action="Index">Peripherals Store</a>
+            <a class="navbar-brand" asp-controller="Products" asp-action="Index">Peripherals Store</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div id="navMenu" class="collapse navbar-collapse">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Главная</a></li>
                     <li class="nav-item"><a class="nav-link" asp-controller="Products" asp-action="Index">Каталог</a></li>
                     @if (User.Identity?.IsAuthenticated ?? false)
                     {

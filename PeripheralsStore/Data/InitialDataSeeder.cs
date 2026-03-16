@@ -25,19 +25,35 @@ public static class InitialDataSeeder
         }
 
         var adminRole = await dbContext.Roles.FirstAsync(r => r.Name == "Admin");
-        if (!await dbContext.Users.AnyAsync(u => u.Email == "admin@peripherals.local"))
+        var adminEmail = "admin@peripherals.local";
+        var adminUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == adminEmail);
+
+        if (adminUser is null)
         {
             dbContext.Users.Add(new User
             {
                 FullName = "Администратор",
-                Email = "admin@peripherals.local",
+                Email = adminEmail,
                 PasswordHash = hasher.HashPasswordDeterministic("Admin123!"),
                 RoleId = adminRole.Id,
                 IsBanned = false,
                 CreatedAt = DateTime.UtcNow
             });
-            await dbContext.SaveChangesAsync();
         }
+        else
+        {
+            // Гарантируем работоспособность тестового входа админа.
+            adminUser.Email = adminEmail;
+            adminUser.RoleId = adminRole.Id;
+            adminUser.IsBanned = false;
+            adminUser.PasswordHash = hasher.HashPasswordDeterministic("Admin123!");
+            if (string.IsNullOrWhiteSpace(adminUser.FullName))
+            {
+                adminUser.FullName = "Администратор";
+            }
+        }
+
+        await dbContext.SaveChangesAsync();
 
         var seedDemoCatalog = configuration.GetValue<bool>("DatabaseSettings:SeedDemoCatalog");
         if (seedDemoCatalog)
