@@ -4,38 +4,48 @@ using Microsoft.EntityFrameworkCore;
 namespace PeripheralsStore.Data;
 
 /// <summary>
-/// Простая и понятная инициализация БД для учебного проекта.
+/// Инициализация схемы БД без потери пользовательских данных по умолчанию.
 /// </summary>
 public static class DbInitializer
 {
-    public static async Task InitializeAsync(IServiceProvider services, ILogger logger)
+    public static async Task InitializeAsync(IServiceProvider services, IConfiguration configuration, ILogger logger)
     {
         await using var scope = services.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
+        var allowDestructiveReset = configuration.GetValue<bool>("DatabaseSettings:AllowDestructiveReset");
+
         try
         {
-            // Основной путь: применяем миграции.
             await dbContext.Database.MigrateAsync();
 
-            // Если миграций нет, старая БД может остаться со старой схемой.
-            // Проверяем критичные колонки и при несовместимости пересоздаём БД.
-            if (!await HasRequiredProductColumnsAsync(dbContext))
+            var compatible = await HasRequiredProductColumnsAsync(dbContext);
+            if (!compatible)
             {
-                logger.LogWarning(
-                    "Обнаружена устаревшая схема таблицы Products (не хватает обязательных колонок). Выполняется пересоздание БД.");
+                if (!allowDestructiveReset)
+                {
+                    throw new InvalidOperationException(
+                        "Схема БД не соответствует текущим моделям (в таблице Products нет обязательных колонок). " +
+                        "Обновите БД через миграции или установите DatabaseSettings:AllowDestructiveReset=true для принудительного пересоздания в учебном режиме.");
+                }
+
+                logger.LogWarning("Обнаружена старая схема Products. Выполняется пересоздание БД по конфигу.");
                 await RecreateDatabaseAsync(dbContext, logger);
-                return;
             }
 
-            logger.LogInformation("Миграции базы данных успешно применены.");
+            logger.LogInformation("Схема базы данных готова к работе.");
         }
         catch (SqlException ex) when (
             ex.Message.Contains("Invalid column name", StringComparison.OrdinalIgnoreCase) ||
             ex.Message.Contains("Cannot find the object", StringComparison.OrdinalIgnoreCase))
         {
-            logger.LogWarning(ex,
-                "Обнаружена несовместимая старая схема БД. Выполняется пересоздание учебной базы данных.");
+            if (!allowDestructiveReset)
+            {
+                throw new InvalidOperationException(
+                    "Обнаружена несовместимая схема БД. Выполните миграции или включите DatabaseSettings:AllowDestructiveReset=true.", ex);
+            }
+
+            logger.LogWarning(ex, "Несовместимая схема БД. Пересоздание включено в конфиге.");
             await RecreateDatabaseAsync(dbContext, logger);
         }
     }

@@ -25,7 +25,8 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-await DbInitializer.InitializeAsync(app.Services, app.Logger);
+await DbInitializer.InitializeAsync(app.Services, app.Configuration, app.Logger);
+await InitialDataSeeder.SeedAsync(app.Services, app.Configuration, app.Logger);
 
 if (!app.Environment.IsDevelopment())
 {

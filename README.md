@@ -29,6 +29,11 @@
 3. `dotnet ef database update --project PeripheralsStore`
 4. `dotnet run --project PeripheralsStore`
 
+> По умолчанию проект **не перезаписывает** ваш каталог товаров и не добавляет демо-товары.
+> Настройки в `appsettings.json`:
+> - `DatabaseSettings:AllowDestructiveReset` — разрешить полное пересоздание БД (по умолчанию `false`)
+> - `DatabaseSettings:SeedDemoCatalog` — добавить демонстрационные товары (по умолчанию `false`)
+
 ## Тестовые аккаунты
 - Админ: `admin@peripherals.local` / `Admin123!`
 
