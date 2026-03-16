@@ -1,22 +1,7 @@
-html {
-  font-size: 14px;
-}
+body { background-color: #f5f7fb; }
+.hero { background: linear-gradient(135deg,#253b80,#3b82f6); }
+.card { border: none; box-shadow: 0 .25rem .75rem rgba(0,0,0,.08); }
+.navbar .nav-link.active, .navbar .nav-link:hover { color: #ffd166 !important; }
+.table td, .table th { vertical-align: middle; }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
-}
+footer .container { padding-top: .15rem; padding-bottom: .15rem; font-size: .8rem; }

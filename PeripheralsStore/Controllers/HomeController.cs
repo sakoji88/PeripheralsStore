@@ -1,32 +1,38 @@
 using Microsoft.AspNetCore.Mvc;
-using PeripheralsStore.Models;
-using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using PeripheralsStore.Data;
 
-namespace PeripheralsStore.Controllers
+namespace PeripheralsStore.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private readonly AppDbContext _dbContext;
+
+    public HomeController(AppDbContext dbContext)
     {
-        private readonly ILogger<HomeController> _logger;
+        _dbContext = dbContext;
+    }
 
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+    public async Task<IActionResult> Index()
+    {
+        var popularProducts = await _dbContext.Products
+            .Where(p => p.IsActive)
+            .Include(p => p.Brand)
+            .OrderByDescending(p => p.StockQuantity)
+            .Take(6)
+            .ToListAsync();
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+        return View(popularProducts);
+    }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+    public IActionResult Error()
+    {
+        return View();
+    }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+    public IActionResult AccessDenied()
+    {
+        TempData["Error"] = "У вас недостаточно прав для выполнения этого действия";
+        return RedirectToAction(nameof(Index));
     }
 }

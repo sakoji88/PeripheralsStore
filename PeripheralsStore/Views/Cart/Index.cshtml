@@ -1,0 +1,56 @@
+@model List<CartItem>
+@{
+    ViewData["Title"] = "Корзина";
+}
+<h1>Корзина</h1>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Корзина пуста.</div>
+    <a class="btn btn-primary" asp-controller="Products" asp-action="Index">Перейти в каталог</a>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Цена</th>
+                <th>Количество</th>
+                <th>Сумма</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Product?.Name</td>
+                <td>@((item.Product?.Price ?? 0).ToString("N0")) ₽</td>
+                <td>
+                    <form asp-action="Update" method="post" class="d-flex gap-2">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <input type="number" name="quantity" min="1" max="100" value="@item.Quantity" class="form-control" style="max-width:100px" />
+                        <button class="btn btn-sm btn-outline-primary" type="submit">Обновить</button>
+                    </form>
+                </td>
+                <td>@(((item.Product?.Price ?? 0) * item.Quantity).ToString("N0")) ₽</td>
+                <td>
+                    <form asp-action="Remove" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button class="btn btn-sm btn-outline-danger" type="submit">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <div class="alert alert-success">Итого: <strong>@(((decimal)ViewBag.Total).ToString("N0")) ₽</strong></div>
+    <form asp-action="Checkout" method="post" class="mt-2">
+        @Html.AntiForgeryToken()
+        <button class="btn btn-success">Приобрести (демо)</button>
+    </form>
+}
