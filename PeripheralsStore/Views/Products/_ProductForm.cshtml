@@ -1,0 +1,22 @@
+@model ProductCreateEditViewModel
+<form method="post" class="card p-3">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row g-2">
+        <div class="col-md-6"><label asp-for="Name"></label><input asp-for="Name" maxlength="120" class="form-control" /><span asp-validation-for="Name" class="text-danger"></span></div>
+        <div class="col-md-6"><label asp-for="Article"></label><input asp-for="Article" maxlength="50" class="form-control" /><span asp-validation-for="Article" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="Price"></label><input asp-for="Price" type="number" step="0.01" min="0.01" class="form-control" /><span asp-validation-for="Price" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="StockQuantity"></label><input asp-for="StockQuantity" type="number" min="0" class="form-control" /><span asp-validation-for="StockQuantity" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="WarrantyMonths"></label><input asp-for="WarrantyMonths" type="number" min="0" max="120" class="form-control" /><span asp-validation-for="WarrantyMonths" class="text-danger"></span></div>
+        <div class="col-md-6"><label asp-for="Color"></label><input asp-for="Color" maxlength="50" class="form-control" /></div>
+        <div class="col-md-6"><label asp-for="ConnectionType"></label><input asp-for="ConnectionType" maxlength="50" class="form-control" /></div>
+        <div class="col-md-6"><label asp-for="CategoryId"></label><select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select"></select></div>
+        <div class="col-md-6"><label asp-for="BrandId"></label><select asp-for="BrandId" asp-items="ViewBag.Brands" class="form-select"></select></div>
+        <div class="col-12"><label asp-for="ImageUrl"></label><input asp-for="ImageUrl" maxlength="300" class="form-control" /></div>
+        <div class="col-12"><label asp-for="Description"></label><textarea asp-for="Description" maxlength="1000" rows="4" class="form-control"></textarea></div>
+        <div class="col-12"><input asp-for="IsActive" /> <label asp-for="IsActive">Активный товар</label></div>
+    </div>
+    <button type="submit" class="btn btn-success mt-3">Сохранить</button>
+</form>
+<partial name="_ValidationScriptsPartial" />
