@@ -14,7 +14,7 @@ public class ProductCreateEditViewModel
     [StringLength(50, ErrorMessage = "Максимум 50 символов")]
     public string Article { get; set; } = string.Empty;
 
-    [Range(typeof(decimal), "0.01", "1000000", ErrorMessage = "Цена должна быть больше 0")]
+    [Range(0.01, 1000000, ErrorMessage = "Цена должна быть больше 0")]
     public decimal Price { get; set; }
 
     [Range(0, 100000, ErrorMessage = "Количество не может быть отрицательным")]

@@ -33,6 +33,9 @@ public static class DbInitializer
                 await RecreateDatabaseAsync(dbContext, logger);
             }
 
+            // Для существующих учебных БД без миграций: безопасно создаем недостающую таблицу корзины.
+            await EnsureCartItemsTableAsync(dbContext, logger);
+
             logger.LogInformation("Схема базы данных готова к работе.");
         }
         catch (SqlException ex) when (
@@ -47,6 +50,7 @@ public static class DbInitializer
 
             logger.LogWarning(ex, "Несовместимая схема БД. Пересоздание включено в конфиге.");
             await RecreateDatabaseAsync(dbContext, logger);
+            await EnsureCartItemsTableAsync(dbContext, logger);
         }
     }
 
@@ -88,5 +92,38 @@ public static class DbInitializer
         }
 
         return true;
+    }
+
+    private static async Task EnsureCartItemsTableAsync(AppDbContext dbContext, ILogger logger)
+    {
+        var connectionString = dbContext.Database.GetConnectionString();
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            return;
+        }
+
+        await using var connection = new SqlConnection(connectionString);
+        await connection.OpenAsync();
+
+        const string sql = """
+                           IF OBJECT_ID(N'[dbo].[CartItems]', N'U') IS NULL
+                           BEGIN
+                               CREATE TABLE [dbo].[CartItems] (
+                                   [Id] INT IDENTITY(1,1) NOT NULL,
+                                   [UserId] INT NOT NULL,
+                                   [ProductId] INT NOT NULL,
+                                   [Quantity] INT NOT NULL,
+                                   CONSTRAINT [PK_CartItems] PRIMARY KEY ([Id]),
+                                   CONSTRAINT [FK_CartItems_Users_UserId] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Users]([Id]) ON DELETE CASCADE,
+                                   CONSTRAINT [FK_CartItems_Products_ProductId] FOREIGN KEY ([ProductId]) REFERENCES [dbo].[Products]([Id]) ON DELETE CASCADE
+                               );
+
+                               CREATE UNIQUE INDEX [IX_CartItems_UserId_ProductId] ON [dbo].[CartItems]([UserId], [ProductId]);
+                           END
+                           """;
+
+        await using var command = new SqlCommand(sql, connection);
+        await command.ExecuteNonQueryAsync();
+        logger.LogInformation("Проверка таблицы CartItems завершена.");
     }
 }
