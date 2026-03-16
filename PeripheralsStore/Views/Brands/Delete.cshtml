@@ -1,0 +1,4 @@
+@model Brand
+<h1>Удаление бренда</h1>
+<p>Удалить бренд <strong>@Model.Name</strong>?</p>
+<form method="post">@Html.AntiForgeryToken()<button class="btn btn-danger" type="submit">Удалить</button></form>

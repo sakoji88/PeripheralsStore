@@ -1,0 +1,9 @@
+@model List<Brand>
+<h1>Бренды</h1>
+<a class="btn btn-primary mb-2" asp-action="Create">Добавить бренд</a>
+<table class="table table-striped"><thead><tr><th>Название</th><th>Страна</th><th></th></tr></thead><tbody>
+@foreach (var item in Model)
+{
+<tr><td>@item.Name</td><td>@item.Country</td><td><a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Изменить</a> <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Удалить</a></td></tr>
+}
+</tbody></table>

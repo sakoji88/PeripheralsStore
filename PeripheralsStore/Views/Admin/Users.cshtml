@@ -1,0 +1,12 @@
+@model List<UserManagementViewModel>
+<h1>Пользователи</h1>
+<table class="table table-striped"><thead><tr><th>Имя</th><th>Email</th><th>Роль</th><th>Статус</th><th></th></tr></thead><tbody>
+@foreach (var u in Model)
+{
+<tr><td>@u.FullName</td><td>@u.Email</td><td>@u.RoleName</td><td>@(u.IsBanned?"Заблокирован":"Активен")</td><td class="d-flex gap-1">
+@if (!u.IsBanned) { <form asp-action="Ban" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@u.Id" /><button class="btn btn-sm btn-warning">Бан</button></form> }
+else { <form asp-action="Unban" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@u.Id" /><button class="btn btn-sm btn-success">Разбан</button></form> }
+@if (u.RoleName != "Admin") { <form asp-action="PromoteToAdmin" method="post">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@u.Id" /><button class="btn btn-sm btn-info">Сделать админом</button></form> }
+</td></tr>
+}
+</tbody></table>
